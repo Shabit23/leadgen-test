@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lead Generation - Product Input</title>
+</head>
+<body>
+    <h1>Enter Product or Service</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="product" placeholder="Enter product or service" required>
+        <button type="submit">Generate Leads</button>
+    </form>
+    <br>
+    <a href="{% url 'lead_list' %}">View Leads</a>
+    {% if messages %}
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+</body>
+</html>

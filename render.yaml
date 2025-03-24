@@ -1,0 +1,20 @@
+# render.yaml
+services:
+  - type: web
+    name: leadgen-app
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn leadgen.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: leadgen.settings
+      - key: GOOGLE_API_KEY
+        value: AIzaSyDIJhGSQlSy-MCPoUDKnCJvg0La8Nc6E90
+      - key: GOOGLE_SEARCH_ENGINE_ID
+        value: e4f40debe9d27401a
+      - key: LINKEDIN_CLIENT_ID
+        value: 86pjhk9k60l03a
+      - key: LINKEDIN_CLIENT_SECRET
+        value: WPL_AP1.GQ0blDVzrwnQuR6i.vZ0J8Q==
+      - key: LINKEDIN_REDIRECT_URI
+        value: https://leadgen-app.onrender.com/linkedin/callback/
