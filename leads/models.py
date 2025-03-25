@@ -2,9 +2,9 @@ from django.db import models
 
 class Lead(models.Model):
     keyword = models.CharField(max_length=255)  # NEW FIELD: stores the search keyword
-    company_name = models.CharField(max_length=255)
+    company_name = models.CharField(max_length=2048)
     email = models.EmailField()
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=1024)
     website = models.URLField()
     industry = models.CharField(max_length=255)
     revenue = models.CharField(max_length=255)
