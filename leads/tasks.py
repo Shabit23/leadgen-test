@@ -34,14 +34,24 @@ def extract_email(text):
 
 # CHANGE #2: Custom phone number regex
 def extract_phone(text):
-    pattern = re.compile(r'\+?\d[\d\-\.\(\) ]{6,}\d')
-    candidates = pattern.findall(text)
+    # Regex to find number-like patterns
+    pattern = re.compile(
+        r'(?:(?:\+|00)?\d{1,4})?[ .\-]?(?:\(?\d{1,4}\)?[ .\-]?){1,5}\d{2,4}'
+    )
+
+    raw_numbers = pattern.findall(text)
     valid_numbers = []
-    for candidate in candidates:
-        digits = re.sub(r'\D', '', candidate)
-        if 7 <= len(digits) <= 15:
-            valid_numbers.append(candidate.strip())
+
+    for number in raw_numbers:
+        # Remove unwanted characters (keep + and digits only)
+        cleaned = re.sub(r'[^\d+]', '', number)
+
+        # Validate: optional + at beginning, only digits after that, 7–15 length
+        if re.fullmatch(r'\+?\d{7,15}', cleaned):
+            valid_numbers.append(cleaned)
+
     return ', '.join(valid_numbers) if valid_numbers else "N/A"
+
 
 def extract_field(text, field_name):
     pattern = re.compile(rf"{field_name}\s*:\s*(.+)", re.IGNORECASE)
