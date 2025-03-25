@@ -4,7 +4,7 @@ class Lead(models.Model):
     keyword = models.CharField(max_length=255)  # NEW FIELD: stores the search keyword
     company_name = models.CharField(max_length=255)
     email = models.EmailField()
-    phone = models.CharField(max_length=50)
+    phone = models.CharField(max_length=255)
     website = models.URLField()
     industry = models.CharField(max_length=255)
     revenue = models.CharField(max_length=255)
