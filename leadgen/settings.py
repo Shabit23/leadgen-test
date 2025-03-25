@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-9)s11i(%y^%ehd&xiqj4u4i-6%o!&y)yzk*#y6ivhanlb1_8)i
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['leadgen-test.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
