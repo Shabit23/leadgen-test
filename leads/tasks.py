@@ -89,7 +89,8 @@ def search_google(product):
              '(buy OR purchase OR "need service") '
              '-inurl:forum -inurl:answers -inurl:discussion -inurl:qa')
     start = 1
-    while True:
+    MAX_START=91
+    while start <= MAX_START:
         url = "https://www.googleapis.com/customsearch/v1"
         params = {"key": api_key, "cx": cx, "q": query, "start": start, "num": 10}
         r = requests.get(url, params=params)
@@ -117,12 +118,13 @@ def search_linkedin(product):
         return []
 
     query = f'site:linkedin.com/company/ "{product}" (buy OR purchase OR need OR service)'
-    start = 1
+    MAX_START = 91
+    
     all_results = {}
 
     logger.info(f"🔍 [LinkedIn via Google] Searching for: {query}")
 
-    while True:
+    while start <= MAX_START:
         url = "https://www.googleapis.com/customsearch/v1"
         params = {
             "key": api_key,
