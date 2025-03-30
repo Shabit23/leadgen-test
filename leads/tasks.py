@@ -197,3 +197,43 @@ def fetch_leads_task(product):
         logger.info("Lead added: %s", lead.company_name)
 
     logger.info("Finished: %d scanned, %d leads created", total, valid)
+
+
+from twilio.rest import Client
+from django.conf import settings
+from django.urls import reverse
+
+@background(schedule=0)
+def call_and_validate_lead(lead_id):
+    from .models import Lead
+    from django.conf import settings
+    from django.urls import reverse
+
+    try:
+        print(f"[CALL SCHEDULED] Triggering call for lead ID {lead_id}")
+        lead = Lead.objects.get(id=lead_id)
+        callback_url = f"{settings.CALLBACK_BASE_URL}{reverse('twilio_response')}?lead_id={lead.id}&q=0"
+
+        client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+        call = client.calls.create(
+            to="+8801716573924",
+            # to=lead.phone,
+            from_=settings.TWILIO_PHONE_NUMBER,
+            url=callback_url,
+            timeout=20
+        )
+        lead.status = "Pending"
+        lead.save()
+        
+    except Exception as e:
+        print("Call failed:", e)
+
+
+from datetime import timedelta
+from django.utils import timezone
+
+@background(schedule=3600)  # 1 hour later
+def retry_pending_leads():
+    leads = Lead.objects.filter(status="Pending", created_at__lte=timezone.now() - timedelta(minutes=60))
+    for lead in leads:
+        call_and_validate_lead(lead.id)

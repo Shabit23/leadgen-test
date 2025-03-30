@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-9)s11i(%y^%ehd&xiqj4u4i-6%o!&y)yzk*#y6ivhanlb1_8)i
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -83,3 +83,11 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+CSRF_TRUSTED_ORIGINS = ["https://07ea-103-252-226-9.ngrok-free.app", "http://localhost:8000"]
+
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+CALLBACK_BASE_URL = os.getenv("CALLBACK_BASE_URL")
