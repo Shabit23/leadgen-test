@@ -55,23 +55,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'leadgen.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('PG_NAME'),
-        'USER': os.getenv('PG_USER'),
-        'PASSWORD': os.getenv('PG_PASSWORD'),
-        'HOST': os.getenv('PG_HOST'),
-        'PORT': os.getenv('PG_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('PG_NAME'),
+#         'USER': os.getenv('PG_USER'),
+#         'PASSWORD': os.getenv('PG_PASSWORD'),
+#         'HOST': os.getenv('PG_HOST'),
+#         'PORT': os.getenv('PG_PORT', '5432'),
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -100,7 +100,7 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-CSRF_TRUSTED_ORIGINS = ["https://07ea-103-252-226-9.ngrok-free.app", "http://localhost:8000", "https://leadgen-test.onrender.com"]
+CSRF_TRUSTED_ORIGINS = ["https://cea4-103-252-226-9.ngrok-free.app", "http://localhost:8000", "https://leadgen-test.onrender.com"]
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")

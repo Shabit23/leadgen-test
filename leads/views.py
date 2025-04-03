@@ -4,7 +4,7 @@ from .models import Lead, KeywordSlug
 from .tasks import fetch_leads_task, call_and_validate_lead
 from django.utils.text import slugify
 from django.contrib import messages
-
+from django.utils import timezone
 
 def keyword_search_view(request):
     if request.method == "POST":
@@ -13,6 +13,7 @@ def keyword_search_view(request):
             keyword = form.cleaned_data['keyword']
             slug = slugify(keyword)
             obj, created = KeywordSlug.objects.get_or_create(keyword=keyword, slug=slug)
+            # obj, created = KeywordSlug.objects.get_or_create(slug=slug, defaults={"keyword": keyword})
             if created or not Lead.objects.filter(keyword=keyword).exists():
                 fetch_leads_task(keyword)
             return redirect('keyword_list')
@@ -53,7 +54,7 @@ def validate_leads(request, slug):
     from django.contrib import messages
     from django.shortcuts import redirect, get_object_or_404
     from datetime import timedelta
-    from django.utils import timezone
+    
 
     keyword_obj = get_object_or_404(KeywordSlug, slug=slug)
     leads = Lead.objects.filter(keyword=keyword_obj.keyword, status__in=["Not Validated", "Pending"])
@@ -79,6 +80,7 @@ def twilio_response(request):
     lead_id = request.GET.get("lead_id")
     question_index = int(request.GET.get("q", "0"))
     voice_result = request.POST.get("SpeechResult", "").lower() if request.method == "POST" else ""
+    print(f"Received response for lead ID {lead_id}, question index {question_index}, answer: {voice_result}")
     response = VoiceResponse()
 
     lead = Lead.objects.filter(id=lead_id).first()
@@ -92,6 +94,7 @@ def twilio_response(request):
         request.session[session_key] = []
 
     answers = request.session.get(session_key)
+    print(f"Current answers: {answers}")
 
     questions = ValidationQuestion.objects.all().order_by("id")
 
@@ -105,6 +108,7 @@ def twilio_response(request):
         )
         answers.append(voice_result)
         request.session[session_key] = answers
+        print(f"Stored answer for question {question_index - 1}: {voice_result}")
 
         # from django.core.cache import cache
 
@@ -125,11 +129,11 @@ def twilio_response(request):
     # Ask next question
     if question_index < len(questions):
         next_q = questions[question_index].question
-        gather = Gather(input="speech", action=f"{request.path}?lead_id={lead_id}&q={question_index+1}", timeout=1, speechTimeout="auto", bargeIn=True)
+        gather = Gather(input="speech", action=f"{request.path}?lead_id={lead_id}&q={question_index+1}", timeout=5)
         gather.say(next_q)
         response.append(gather)
-        # response.say("Sorry, we did not get your response.")
-        response.redirect(f"{request.path}?lead_id={lead_id}&q={question_index}")
+        response.say("Sorry, we did not get your response.")
+        # response.redirect(f"{request.path}?lead_id={lead_id}&q={question_index}")
     else:
         # End of questions: analyze responses
         yes_keywords = ["yes", "interested", "sure", "okay", "fine", "of course", "yup", "definitely"]
@@ -187,3 +191,27 @@ def export_keyword_excel(request, slug):
     response['Content-Disposition'] = f'attachment; filename={slug}_leads.xlsx'
     wb.save(response)
     return response
+
+from django.http import HttpResponseRedirect
+
+@csrf_exempt
+def call_lead(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    # Simulate Twilio call triggering logic here
+    print(f"[Calling Lead] {lead.company_name}, {lead.phone}")
+    schedule_time = timezone.now()
+    call_and_validate_lead(lead_id, schedule=schedule_time)
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+@csrf_exempt
+def edit_lead(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+    if request.method == "POST":
+        lead.company_name = request.POST.get("company_name")
+        lead.email = request.POST.get("email")
+        lead.phone = request.POST.get("phone")
+        lead.website = request.POST.get("website")
+        lead.location = request.POST.get("location")
+        lead.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

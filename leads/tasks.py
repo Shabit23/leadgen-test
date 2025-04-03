@@ -216,8 +216,8 @@ def call_and_validate_lead(lead_id):
 
         client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
         call = client.calls.create(
-            to="+8801716573924",
-            # to=lead.phone,
+            # to="+8801716573924",
+            to=lead.phone,
             from_=settings.TWILIO_PHONE_NUMBER,
             url=callback_url,
             timeout=20

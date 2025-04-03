@@ -8,4 +8,6 @@ urlpatterns = [
     path('validate/<slug:slug>/', views.validate_leads, name='validate_leads'),
     path('twilio-response/', views.twilio_response, name='twilio_response'),
     path('export/<slug:slug>/', views.export_keyword_excel, name='export_keyword_excel'),
+    path('lead/<int:lead_id>/call/', views.call_lead, name='call_lead'),
+    path('lead/<int:lead_id>/edit/', views.edit_lead, name='edit_lead'),
 ]
