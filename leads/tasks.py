@@ -213,15 +213,19 @@ def call_and_validate_lead(lead_id):
         print(f"[CALL SCHEDULED] Triggering call for lead ID {lead_id}")
         lead = Lead.objects.get(id=lead_id)
         callback_url = f"{settings.CALLBACK_BASE_URL}{reverse('twilio_response')}?lead_id={lead.id}&q=0"
-
+        print(f"[CALL SCHEDULED] Callback URL: {callback_url}")
         client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
         call = client.calls.create(
-            # to="+8801716573924",
-            to=lead.phone,
+            to="+8801716573924",
+            # to=lead.phone,
             from_=settings.TWILIO_PHONE_NUMBER,
             url=callback_url,
+            status_callback=f"{settings.CALLBACK_BASE_URL}/twilio/status/",
+            status_callback_event=['initiated', 'ringing', 'answered', 'completed'],
+            status_callback_method='POST',
             timeout=20
         )
+        print(f"[CALL SCHEDULED] Call SID: {call.sid} - {call}")
         lead.status = "Pending"
         lead.save()
         

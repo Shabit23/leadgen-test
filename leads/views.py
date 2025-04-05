@@ -77,6 +77,7 @@ import json
 
 @csrf_exempt
 def twilio_response(request):
+    print("🚀 Twilio callback received")
     lead_id = request.GET.get("lead_id")
     question_index = int(request.GET.get("q", "0"))
     voice_result = request.POST.get("SpeechResult", "").lower() if request.method == "POST" else ""
@@ -133,13 +134,14 @@ def twilio_response(request):
         gather.say(next_q)
         response.append(gather)
         response.say("Sorry, we did not get your response.")
+        response.redirect(f"{request.path}?lead_id={lead_id}&q={question_index}")
         # response.redirect(f"{request.path}?lead_id={lead_id}&q={question_index}")
     else:
         # End of questions: analyze responses
         yes_keywords = ["yes", "interested", "sure", "okay", "fine", "of course", "yup", "definitely"]
         positive_count = sum(1 for a in answers if any(k in a for k in yes_keywords))
 
-        if positive_count >= 4:
+        if positive_count >= 3:
             lead.status = "Interested"
         elif positive_count == 0:
             lead.status = "Pending"
@@ -158,7 +160,10 @@ def twilio_response(request):
 
     return HttpResponse(str(response), content_type="application/xml")
 
-
+@csrf_exempt
+def twilio_status(request):
+    print("📞 Status callback:", request.POST)
+    return HttpResponse("OK")
 
 def export_keyword_excel(request, slug):
     from .models import Lead, KeywordSlug
