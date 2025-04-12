@@ -141,6 +141,11 @@
             document.getElementById("edit_status").value = button.getAttribute('data-status');
             document.getElementById("editForm").action = `/lead/${button.getAttribute('data-id')}/edit/`;
         });
+
+        // 🔁 Auto-refresh every 3 seconds
+        setInterval(function () {
+            location.reload();
+        }, 2000);
     });
 </script>
 </body>
