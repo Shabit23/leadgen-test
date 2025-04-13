@@ -16,7 +16,7 @@ def keyword_search_view(request):
             # obj, created = KeywordSlug.objects.get_or_create(slug=slug, defaults={"keyword": keyword})
             if created or not Lead.objects.filter(keyword=keyword).exists():
                 fetch_leads_task(keyword)
-            return redirect('keyword_leads', slug=slug)
+            return redirect('keyword_leads', slug=slug) #changed for redirection
     else:
         form = LeadKeywordForm()
     return render(request, 'leads/keyword_form.html', {'form': form})
